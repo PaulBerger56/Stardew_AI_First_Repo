@@ -20,6 +20,10 @@ frameHeight = int(main_monitor['height'] * 0.5)
 bush1_path = r"reference_images\bush1.PNG"
 bush1_img = cv2.imread(bush1_path, cv2.IMREAD_UNCHANGED)
 
+# Gets the width and height of our reference image so we can draw rectangles around matches 
+w = bush1_img.shape[1]
+h = bush1_img.shape[0]
+
 
 with mss.mss() as sct:
     while True:       
@@ -27,20 +31,33 @@ with mss.mss() as sct:
         
         screen = np.array(sct.grab(main_monitor))    
             
+        # Moved this line lower after modifying the screen with rectangles
+        # img = cv2.resize(screen, (frameWidth, frameHeight))
         
-        img = cv2.resize(screen, (frameWidth, frameHeight))
-        
-        cv2.imshow("Result", img)
+        # cv2.imshow("Screen Recording", img)
         
         if cv2.waitKey(1) & 0xFF == 27:
             break
         
-        # Template matching for the bush on the screen
-        
+        # Template matching for the bush on the screen        
         result = cv2.matchTemplate(screen, bush1_img, cv2.TM_CCOEFF_NORMED)
-        result_img = cv2.resize(result, (frameWidth, frameHeight))
-        cv2.imshow('Comparator', result_img)
         
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+        
+        # Create rectangles around matches
+        cv2.rectangle(screen, max_loc, (max_loc[0] + w, max_loc[1] + h), (0,255,255), 2)
+        img = cv2.resize(screen, (frameWidth, frameHeight))
+        cv2.imshow('Rectangles', img)
+        
+        # Creates the heatmap and produces it in a new window
+        # heatmap = cv2.resize(result, (frameWidth, frameHeight))
+        # cv2.imshow('Heatmap', heatmap)
+        
+        
+        
+        # print(f'Max location: {max_loc} Max Val: {max_val}')
+        
+       
         
         
 # Release the window and close it
