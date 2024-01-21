@@ -44,14 +44,27 @@ with mss.mss() as sct:
         
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
         
-        # Create rectangles around matches
-        cv2.rectangle(screen, max_loc, (max_loc[0] + w, max_loc[1] + h), (0,255,255), 2)
-        img = cv2.resize(screen, (frameWidth, frameHeight))
-        cv2.imshow('Rectangles', img)
+        # Create rectangles around max match
+        # cv2.rectangle(screen, max_loc, (max_loc[0] + w, max_loc[1] + h), (0,255,255), 2)
+        # img = cv2.resize(screen, (frameWidth, frameHeight))
+        # cv2.imshow('Rectangles', img)
         
         # Creates the heatmap and produces it in a new window
         # heatmap = cv2.resize(result, (frameWidth, frameHeight))
         # cv2.imshow('Heatmap', heatmap)
+        
+        # Get all of the matches above a certain threshhold
+        threshold = .50
+        yloc, xloc = np.where(result >= threshold)
+        
+        for (x, y) in zip(xloc, yloc):
+            cv2.rectangle(screen, (x, y), (x+w, y+h), (0,255,255), 2)
+            
+        
+        
+        
+        img = cv2.resize(screen, (frameWidth, frameHeight))
+        cv2.imshow('Rectangles', img)
         
         
         
