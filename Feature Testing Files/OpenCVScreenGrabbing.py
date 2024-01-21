@@ -2,6 +2,8 @@ import cv2
 import mss
 import numpy as np
 
+
+
 # Grabs the monitors
 monitors = mss.mss().monitors
 '''
@@ -14,6 +16,10 @@ main_monitor = monitors[1]
 
 frameWidth = int(main_monitor['width'] * 0.5)
 frameHeight = int(main_monitor['height'] * 0.5)
+
+bush1_path = r"reference_images\bush1.PNG"
+bush1_img = cv2.imread(bush1_path, cv2.IMREAD_UNCHANGED)
+
 
 with mss.mss() as sct:
     while True:       
@@ -28,6 +34,13 @@ with mss.mss() as sct:
         
         if cv2.waitKey(1) & 0xFF == 27:
             break
+        
+        # Template matching for the bush on the screen
+        
+        result = cv2.matchTemplate(screen, bush1_img, cv2.TM_CCOEFF_NORMED)
+        result_img = cv2.resize(result, (frameWidth, frameHeight))
+        cv2.imshow('Comparator', result_img)
+        
         
         
 # Release the window and close it
